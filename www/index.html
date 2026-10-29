@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1f2a44">
+  <title>Caminar en Fe</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="app">
+
+    <!-- PANTALLA: bienvenida -->
+    <section id="pantalla-bienvenida" class="pantalla oculta">
+      <div class="hero">
+        <svg viewBox="0 0 320 190" role="img" aria-label="Biblia abierta rodeada de luz">
+          <defs>
+            <radialGradient id="luz" cx="50%" cy="50%" r="50%">
+              <stop offset="0" style="stop-color:var(--accent);stop-opacity:.5"/>
+              <stop offset="1" style="stop-color:var(--accent);stop-opacity:0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="160" cy="100" r="100" fill="url(#luz)"/>
+          <g style="stroke:var(--accent)" stroke-width="3" stroke-linecap="round" opacity=".75">
+            <line x1="160" y1="22" x2="160" y2="48" transform="rotate(-72 160 105)"/>
+            <line x1="160" y1="22" x2="160" y2="48" transform="rotate(-48 160 105)"/>
+            <line x1="160" y1="22" x2="160" y2="48" transform="rotate(-24 160 105)"/>
+            <line x1="160" y1="16" x2="160" y2="46" />
+            <line x1="160" y1="22" x2="160" y2="48" transform="rotate(24 160 105)"/>
+            <line x1="160" y1="22" x2="160" y2="48" transform="rotate(48 160 105)"/>
+            <line x1="160" y1="22" x2="160" y2="48" transform="rotate(72 160 105)"/>
+          </g>
+          <!-- páginas -->
+          <path d="M160 152 C130 140 92 140 58 150 L58 106 C92 96 130 96 160 110 Z" style="fill:var(--card);stroke:var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M160 152 C190 140 228 140 262 150 L262 106 C228 96 190 96 160 110 Z" style="fill:var(--card);stroke:var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>
+          <g style="stroke:var(--muted)" stroke-width="2" stroke-linecap="round" opacity=".7">
+            <line x1="76" y1="116" x2="140" y2="122"/><line x1="76" y1="126" x2="140" y2="132"/><line x1="76" y1="136" x2="124" y2="141"/>
+            <line x1="180" y1="122" x2="244" y2="116"/><line x1="180" y1="132" x2="244" y2="126"/><line x1="196" y1="141" x2="244" y2="136"/>
+          </g>
+          <!-- cubierta -->
+          <path d="M50 154 C90 144 130 144 160 158 C190 144 230 144 270 154 L270 164 C230 154 190 154 160 168 C130 154 90 154 50 164 Z" style="fill:var(--accent)"/>
+        </svg>
+      </div>
+      <h1 class="centro">Bienvenido a Caminar en Fe</h1>
+      <blockquote class="centro">“Lámpara es a mis pies tu palabra, y lumbrera a mi camino.”</blockquote>
+      <cite class="centro">Salmo 119:105</cite>
+      <article class="tarjeta">
+        <p>Esta app te acompaña cuando la lucha aprieta. Pero la Palabra de Dios no es solo un botiquín de emergencia: es alimento diario. Quien la lee cada día llega a la tentación con el corazón ya preparado.</p>
+        <p><strong>Haz de la Biblia un hábito, no solo un recurso en la crisis:</strong></p>
+        <ul class="habito">
+          <li>Empieza pequeño: cinco minutos al día valen más que una hora de vez en cuando.</li>
+          <li>Elige siempre la misma hora y el mismo lugar.</li>
+          <li>Lee un pasaje completo, no solo versículos sueltos.</li>
+          <li>Si un día fallas, retoma al siguiente. La gracia de Dios se renueva cada mañana.</li>
+        </ul>
+      </article>
+      <button id="btn-comenzar" class="primario">Continuar</button>
+      <div id="progreso" class="progreso oculta" aria-hidden="true"><span id="progreso-barra"></span></div>
+    </section>
+
+    <!-- PANTALLA: elegir lucha -->
+    <section id="pantalla-elegir" class="pantalla">
+      <header>
+        <h1>Caminar en Fe</h1>
+        <p class="sub">¿Con qué estás luchando hoy?</p>
+      </header>
+      <div id="lista-luchas" class="grid"></div>
+      <p class="nota">Tu elección se guarda solo en este dispositivo.</p>
+    </section>
+
+    <!-- PANTALLA: inicio de la lucha elegida -->
+    <section id="pantalla-inicio" class="pantalla oculta">
+      <header class="barra">
+        <button id="btn-cambiar" class="icono" aria-label="Cambiar lucha">←</button>
+        <h2 id="titulo-lucha"></h2>
+        <button id="btn-ajustes" class="icono" aria-label="Ajustes">⚙</button>
+      </header>
+
+      <article class="tarjeta" id="tarjeta-versiculo">
+        <span class="etiqueta">Versículo de hoy</span>
+        <blockquote id="v-texto"></blockquote>
+        <cite id="v-ref"></cite>
+        <p class="contexto" id="v-contexto"></p>
+        <p class="aplicacion" id="v-aplicacion"></p>
+        <button id="btn-otro" class="secundario">Otro versículo</button>
+      </article>
+
+      <article class="tarjeta racha">
+        <div>
+          <span class="etiqueta">Días de victoria</span>
+          <div class="numero" id="racha-dias">0</div>
+        </div>
+        <div class="botones">
+          <button id="btn-bien" class="primario">Hoy fue un buen día</button>
+          <button id="btn-cai" class="secundario">Tuve una caída</button>
+        </div>
+        <p id="racha-msg" class="mensaje"></p>
+      </article>
+
+      <button id="btn-tentado" class="emergencia">Estoy siendo tentado ahora</button>
+    </section>
+
+    <!-- PANTALLA: emergencia -->
+    <section id="pantalla-emergencia" class="pantalla oculta emergencia-pantalla">
+      <header class="barra">
+        <button id="btn-cerrar-emg" class="icono" aria-label="Cerrar">✕</button>
+        <h2>Detente un momento</h2>
+        <span></span>
+      </header>
+      <p class="respira">Respira hondo. Dios está contigo en este momento.</p>
+      <article class="tarjeta">
+        <blockquote id="e-texto"></blockquote>
+        <cite id="e-ref"></cite>
+      </article>
+      <article class="tarjeta">
+        <span class="etiqueta">Haz esto ahora</span>
+        <p id="e-accion"></p>
+      </article>
+      <article class="tarjeta">
+        <span class="etiqueta">Ora</span>
+        <p id="e-oracion"></p>
+      </article>
+      <button id="btn-emg-otro" class="secundario">Otro versículo</button>
+      <p class="nota">Si esta lucha te supera, habla hoy con un pastor, consejero o amigo de confianza. No tienes que pelear solo.</p>
+    </section>
+
+    <!-- PANTALLA: ajustes -->
+    <section id="pantalla-ajustes" class="pantalla oculta">
+      <header class="barra">
+        <button id="btn-cerrar-ajustes" class="icono" aria-label="Volver">←</button>
+        <h2>Ajustes</h2>
+        <span></span>
+      </header>
+      <article class="tarjeta">
+        <label class="fila">
+          <span>Recordatorio diario</span>
+          <input type="checkbox" id="aj-activo">
+        </label>
+        <label class="fila">
+          <span>Hora</span>
+          <input type="time" id="aj-hora" value="21:00">
+        </label>
+        <p class="nota">La notificación dice solo "Tu versículo de hoy", sin mencionar tu lucha.</p>
+        <button id="btn-guardar-aj" class="primario">Guardar</button>
+        <p id="aj-msg" class="mensaje"></p>
+      </article>
+      <article class="tarjeta">
+        <button id="btn-ver-bienvenida" class="secundario">Ver mensaje de bienvenida</button>
+      </article>
+      <article class="tarjeta">
+        <button id="btn-borrar" class="peligro">Borrar todos mis datos</button>
+      </article>
+    </section>
+
+  </main>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

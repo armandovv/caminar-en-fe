@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Caminar en fe</string>
+    <string name="title_activity_main">caminar en fe</string>
+    <string name="package_name">com.armando.fortaleza</string>
+    <string name="custom_url_scheme">com.armando.fortaleza</string>
+</resources>
