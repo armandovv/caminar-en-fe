@@ -15,8 +15,9 @@
       <div class="hero">
         <img src="img/oracion.jpg" alt="Mujer orando con la Biblia en las manos">
       </div>
-      <h1 class="centro">Bienvenido a Caminar en Fe</h1>
-      <blockquote class="centro">“Lámpara es a mis pies tu palabra, y lumbrera a mi camino.”</blockquote>
+      <p class="saludo centro">Bienvenido a</p>
+      <h1 class="marca centro">Caminar en Fe</h1>
+      <blockquote class="centro">“Lámpara es á mis pies tu palabra, y lumbrera á mi camino.”</blockquote>
       <cite class="centro">Salmo 119:105</cite>
       <article class="tarjeta">
         <p>Esta app te acompaña cuando la lucha aprieta. Pero la Palabra de Dios no es solo un botiquín de emergencia: es alimento diario. Quien la lee cada día llega a la tentación con el corazón ya preparado.</p>
@@ -35,7 +36,7 @@
     <!-- PANTALLA: elegir lucha -->
     <section id="pantalla-elegir" class="pantalla">
       <header>
-        <h1>Caminar en Fe</h1>
+        <h1 class="marca">Caminar en Fe</h1>
         <p class="sub">¿Con qué estás luchando hoy?</p>
       </header>
       <div id="lista-luchas" class="grid"></div>
@@ -56,7 +57,11 @@
         <cite id="v-ref"></cite>
         <p class="contexto" id="v-contexto"></p>
         <p class="aplicacion" id="v-aplicacion"></p>
-        <button id="btn-otro" class="secundario">Otro versículo</button>
+        <div class="fila-botones">
+          <button id="btn-compartir" class="primario">Compartir</button>
+          <button id="btn-otro" class="secundario">Otro versículo</button>
+        </div>
+        <p id="v-msg" class="mensaje"></p>
       </article>
 
       <article class="tarjeta racha">
@@ -72,6 +77,21 @@
       </article>
 
       <button id="btn-tentado" class="emergencia">Estoy siendo tentado ahora</button>
+      <p class="nota">Texto bíblico: Reina-Valera 1909 (dominio público).</p>
+    </section>
+
+    <!-- PANTALLA: compartir -->
+    <section id="pantalla-compartir" class="pantalla oculta">
+      <header class="barra">
+        <button id="btn-cerrar-comp" class="icono" aria-label="Volver">←</button>
+        <h2>Compartir versículo</h2>
+        <span></span>
+      </header>
+      <canvas id="c-canvas" class="vista-previa" width="1080" height="1350"></canvas>
+      <div id="temas" class="temas"></div>
+      <button id="btn-comp-img" class="primario">Compartir imagen</button>
+      <button id="btn-comp-txt" class="secundario espacio">Compartir como texto</button>
+      <p id="c-msg" class="mensaje centro"></p>
     </section>
 
     <!-- PANTALLA: emergencia -->

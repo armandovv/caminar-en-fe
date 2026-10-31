@@ -29,7 +29,7 @@
     return null;
   }
   function mostrar(id) {
-    ["pantalla-bienvenida", "pantalla-elegir", "pantalla-inicio", "pantalla-emergencia", "pantalla-ajustes"].forEach(function (p) {
+    ["pantalla-bienvenida", "pantalla-elegir", "pantalla-inicio", "pantalla-compartir", "pantalla-emergencia", "pantalla-ajustes"].forEach(function (p) {
       $(p).classList.toggle("oculta", p !== id);
     });
     window.scrollTo(0, 0);
@@ -70,8 +70,224 @@
     $("v-ref").textContent = v.ref;
     $("v-contexto").textContent = v.contexto;
     $("v-aplicacion").textContent = "Para hoy: " + v.aplicacion;
+    $("v-msg").textContent = "";
     estado.refActual = v.ref;
   }
+
+  // ---------- Compartir ----------
+  // El texto compartido NO incluye el nombre de tu lucha, para proteger tu privacidad.
+  function versiculoMostrado() {
+    var l = luchaActual();
+    if (!l) return null;
+    for (var i = 0; i < l.versiculos.length; i++) {
+      if (l.versiculos[i].ref === estado.refActual) return l.versiculos[i];
+    }
+    return l.versiculos[0];
+  }
+  function textoCompartir(v) {
+    return "“" + v.texto + "”\n— " + v.ref + "\n\n" +
+      v.contexto + "\n\n" +
+      "Para hoy: " + v.aplicacion + "\n\n" +
+      "Caminar en Fe";
+  }
+  // ---- Compartir como imagen ----
+  var IMG_W = 1080, IMG_H = 1350;
+  var TEMAS = [
+    { nombre: "Noche",    stops: ["#26335A", "#141C38", "#0A0F22"], texto: "#F6F4EF", acento: "#D6A455" },
+    { nombre: "Amanecer", stops: ["#F6B26B", "#D9667A", "#5E3A87"], texto: "#FFFFFF", acento: "#FFE2A8" },
+    { nombre: "Bosque",   stops: ["#2D6A4F", "#1B4332", "#0B2218"], texto: "#F1F7F2", acento: "#E3C26B" },
+    { nombre: "Cielo",    stops: ["#6DB3F2", "#2F6FB5", "#143A6B"], texto: "#FFFFFF", acento: "#FFE9A8" }
+  ];
+  var temaIdx = 0;
+
+  function conAlfa(hex, a) {
+    var n = parseInt(hex.slice(1), 16);
+    return "rgba(" + (n >> 16) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
+  }
+  function envolver(ctx, texto, ancho) {
+    var palabras = texto.split(/\s+/), lineas = [], linea = "";
+    palabras.forEach(function (p) {
+      var prueba = linea ? linea + " " + p : p;
+      if (ctx.measureText(prueba).width > ancho && linea) { lineas.push(linea); linea = p; }
+      else { linea = prueba; }
+    });
+    if (linea) lineas.push(linea);
+    return lineas;
+  }
+
+  function dibujarImagen() {
+    var v = versiculoMostrado();
+    if (!v) return;
+    var c = $("c-canvas");
+    var ctx = c.getContext("2d");
+    var t = TEMAS[temaIdx];
+    c.width = IMG_W; c.height = IMG_H;
+
+    // fondo en degradado
+    var g = ctx.createLinearGradient(0, 0, 0, IMG_H);
+    t.stops.forEach(function (s, i) { g.addColorStop(i / (t.stops.length - 1), s); });
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, IMG_W, IMG_H);
+
+    // rayos de luz desde arriba
+    for (var i = 0; i < 7; i++) {
+      var ang = (Math.PI / 180) * (35 + i * 18.3);
+      var ancho = 0.06;
+      ctx.beginPath();
+      ctx.moveTo(IMG_W / 2, -40);
+      ctx.lineTo(IMG_W / 2 + Math.cos(ang - ancho) * 2200, -40 + Math.sin(ang - ancho) * 2200);
+      ctx.lineTo(IMG_W / 2 + Math.cos(ang + ancho) * 2200, -40 + Math.sin(ang + ancho) * 2200);
+      ctx.closePath();
+      ctx.fillStyle = conAlfa(t.acento, 0.07);
+      ctx.fill();
+    }
+    // resplandor superior
+    var r = ctx.createRadialGradient(IMG_W / 2, 0, 0, IMG_W / 2, 0, 820);
+    r.addColorStop(0, conAlfa(t.acento, 0.5));
+    r.addColorStop(1, conAlfa(t.acento, 0));
+    ctx.fillStyle = r;
+    ctx.fillRect(0, 0, IMG_W, IMG_H);
+
+    // marco fino
+    ctx.strokeStyle = conAlfa(t.acento, 0.55);
+    ctx.lineWidth = 3;
+    ctx.strokeRect(48, 48, IMG_W - 96, IMG_H - 96);
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
+    var serif = 'Georgia, "Times New Roman", serif';
+
+    // comilla decorativa
+    ctx.fillStyle = conAlfa(t.acento, 0.75);
+    ctx.font = "bold 200px " + serif;
+    ctx.fillText("“", IMG_W / 2, 330);
+
+    // versículo: se ajusta el tamaño para que quepa
+    var texto = v.texto;
+    var anchoTexto = IMG_W - 240;
+    var tam = 72, lineas, alto;
+    for (; tam >= 36; tam -= 2) {
+      ctx.font = "italic " + tam + "px " + serif;
+      lineas = envolver(ctx, texto, anchoTexto);
+      alto = lineas.length * tam * 1.38;
+      if (alto <= 640) break;
+    }
+    var yInicio = 430 + Math.max(0, (640 - alto) / 2);
+    ctx.fillStyle = t.texto;
+    ctx.shadowColor = "rgba(0,0,0,0.25)";
+    ctx.shadowBlur = 8;
+    lineas.forEach(function (l, k) {
+      ctx.fillText(l, IMG_W / 2, yInicio + tam + k * tam * 1.38);
+    });
+    ctx.shadowBlur = 0;
+
+    // línea y referencia
+    var yRef = yInicio + alto + 90;
+    ctx.fillStyle = conAlfa(t.acento, 0.9);
+    ctx.fillRect(IMG_W / 2 - 60, yRef - 62, 120, 4);
+    ctx.fillStyle = t.acento;
+    ctx.font = "bold 50px " + serif;
+    ctx.fillText(v.ref, IMG_W / 2, yRef + 10);
+
+    // marca
+    ctx.fillStyle = conAlfa(t.texto, 0.85);
+    ctx.font = "600 34px system-ui, sans-serif";
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "8px";
+    ctx.fillText("CAMINAR EN FE", IMG_W / 2, IMG_H - 100);
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+  }
+
+  function pintarTemas() {
+    var cont = $("temas");
+    cont.innerHTML = "";
+    TEMAS.forEach(function (t, i) {
+      var b = document.createElement("button");
+      b.className = "tema" + (i === temaIdx ? " activo" : "");
+      b.setAttribute("aria-label", "Fondo " + t.nombre);
+      b.style.background = "linear-gradient(160deg," + t.stops[0] + "," + t.stops[2] + ")";
+      b.addEventListener("click", function () {
+        temaIdx = i;
+        estado.tema = i;
+        guardar(estado);
+        pintarTemas();
+        dibujarImagen();
+      });
+      cont.appendChild(b);
+    });
+  }
+
+  $("btn-compartir").addEventListener("click", function () {
+    temaIdx = estado.tema || 0;
+    $("c-msg").textContent = "";
+    pintarTemas();
+    dibujarImagen();
+    mostrar("pantalla-compartir");
+  });
+  $("btn-cerrar-comp").addEventListener("click", function () { mostrar("pantalla-inicio"); });
+
+  function esCancelacion(e) {
+    return /cancel|abort/i.test(String((e && (e.name || e.message)) || ""));
+  }
+
+  async function compartirImagen() {
+    var c = $("c-canvas");
+    var msg = $("c-msg");
+    msg.textContent = "";
+    var nombre = "versiculo-" + Date.now() + ".png";
+    try {
+      var P = window.Capacitor && window.Capacitor.Plugins;
+      if (P && P.Share && P.Filesystem) {
+        var base64 = c.toDataURL("image/png").split(",")[1];
+        var r = await P.Filesystem.writeFile({ path: nombre, data: base64, directory: "CACHE" });
+        await P.Share.share({ title: "Caminar en Fe", files: [r.uri], dialogTitle: "Compartir versículo" });
+        return;
+      }
+      var blob = await new Promise(function (res) { c.toBlob(res, "image/png"); });
+      var file = new File([blob], nombre, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: "Caminar en Fe" });
+        return;
+      }
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = nombre;
+      a.click();
+      msg.textContent = "Imagen descargada.";
+    } catch (e) {
+      if (esCancelacion(e)) return;
+      msg.textContent = "No se pudo compartir la imagen en este dispositivo.";
+    }
+  }
+
+  async function compartirTexto() {
+    var v = versiculoMostrado();
+    if (!v) return;
+    var texto = textoCompartir(v);
+    var msg = $("c-msg");
+    msg.textContent = "";
+    try {
+      var S = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Share;
+      if (S) {
+        await S.share({ title: "Caminar en Fe", text: texto, dialogTitle: "Compartir versículo" });
+        return;
+      }
+      if (navigator.share) {
+        await navigator.share({ title: "Caminar en Fe", text: texto });
+        return;
+      }
+    } catch (e) {
+      if (esCancelacion(e)) return;
+    }
+    try {
+      await navigator.clipboard.writeText(texto);
+      msg.textContent = "Copiado. Pégalo donde quieras compartirlo.";
+    } catch (e2) {
+      msg.textContent = "No se pudo compartir en este dispositivo.";
+    }
+  }
+
+  $("btn-comp-img").addEventListener("click", compartirImagen);
+  $("btn-comp-txt").addEventListener("click", compartirTexto);
 
   // ---------- Inicio ----------
   function irInicio() {

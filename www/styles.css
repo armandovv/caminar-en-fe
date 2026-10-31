@@ -1,3 +1,15 @@
+/* Tipografías incluidas en la app (licencia OFL, ver fonts/OFL.txt): Cormorant Garamond y Cormorant SC */
+@font-face {
+  font-family: "Cormorant Italic";
+  src: url("fonts/CormorantGaramond-SemiBoldItalic.woff2") format("woff2");
+  font-weight: 600; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant SC";
+  src: url("fonts/CormorantSC-SemiBold.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+
 :root {
   --bg: #f6f4ef;
   --card: #ffffff;
@@ -34,12 +46,15 @@ body {
 h1 { font-family: Georgia, serif; font-size: 2rem; margin: 12px 0 0; }
 h2 { font-family: Georgia, serif; font-size: 1.25rem; margin: 0; }
 .sub { color: var(--muted); margin: 4px 0 20px; }
+.marca { font-family: "Cormorant Italic", Georgia, serif; font-style: italic; font-weight: 600; font-size: 3.3rem; line-height: 1.05; margin: 6px 0 0; }
+.saludo { font-family: "Cormorant SC", Georgia, serif; font-weight: 600; font-size: 1.2rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin: 14px 0 0; padding-left: 0.3em; }
 
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .lucha {
   background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
   padding: 16px 12px; text-align: left; color: var(--ink); cursor: pointer; font: inherit;
 }
+.lucha { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; }
 .lucha:active { transform: scale(0.98); }
 .lucha .ico { font-size: 1.8rem; display: block; }
 .lucha strong { display: block; margin-top: 6px; }
@@ -72,6 +87,13 @@ button { font: inherit; }
 .nota { color: var(--muted); font-size: 0.85rem; text-align: center; }
 .hero { max-width: 420px; margin: 4px auto 14px; }
 .hero img { width: 100%; height: auto; max-height: 300px; object-fit: cover; object-position: center; display: block; border-radius: var(--radius); box-shadow: 0 6px 18px rgba(0,0,0,.15); }
+.vista-previa { width: 100%; height: auto; display: block; border-radius: var(--radius); box-shadow: 0 6px 18px rgba(0,0,0,.2); margin-bottom: 12px; }
+.temas { display: flex; justify-content: center; gap: 12px; margin-bottom: 14px; }
+.tema { width: 44px; height: 44px; border-radius: 50%; border: 3px solid transparent; outline: 1px solid var(--line); cursor: pointer; padding: 0; }
+.tema.activo { border-color: var(--accent); }
+.espacio { margin-top: 8px; }
+.fila-botones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+#v-msg { margin-top: 8px; }
 .centro { text-align: center; }
 #pantalla-bienvenida h1 { margin-top: 4px; }
 #pantalla-bienvenida .tarjeta p { margin: 0 0 10px; }
